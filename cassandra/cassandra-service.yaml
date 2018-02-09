@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cassandra
+  labels:
+    app: cassandra
+spec:
+  clusterIP: None
+  selector:
+    app: cassandra
+  ports:
+    - port: 7000
+      name: intra-node
+    - port: 7001
+      name: tls-intra-node
+    - port: 7199
+      name: jmx
+    - port: 9042
+      name: cql
