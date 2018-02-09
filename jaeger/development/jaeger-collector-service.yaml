@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: jaeger
+    tier: collector
+spec:
+  selector:
+    app: jaeger
+  ports:
+    - port: 14267
+      name: tchannel
+    - port: 14268
+      name: http
+    - port: 9411
+      name: zipkin

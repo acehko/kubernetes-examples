@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: jaeger-query
+  labels:
+    app: jaeger
+    tier: query
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jaeger
+      tier: query
+  template:
+    metadata:
+      labels:
+        app: jaeger
+        tier: query
+    spec:
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - cassandra
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - jaeger
+                    - key: tier
+                      operator: In
+                      values:
+                        - query
+      containers:
+        - name: jaeger
+          image: jaegertracing/jaeger-query:1.2.0
+          ports:
+            - containerPort: 16686
+          env:
+            - name: CASSANDRA_SERVERS
+              value: "cassandra-0.cassandra,\
+                      cassandra-1.cassandra,\
+                      cassandra-2.cassandra"
+            - name: CASSANDRA_KEYSPACE
+              value: "jaeger_v1_dc1"
+          readinessProbe:
+            httpGet:
+              path: "/"
+              port: 16686
