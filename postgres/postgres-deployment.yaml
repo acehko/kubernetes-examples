@@ -6,6 +6,8 @@ metadata:
   labels:
     app: postgres
 spec:
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: postgres
@@ -16,17 +18,15 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:10.2
+          image: postgres:10.4
           ports:
             - containerPort: 5432
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data
           env:
-            - name: POSTGRES_USER
-              value: root
             - name: POSTGRES_PASSWORD
-              value: root
+              value: postgres
       volumes:
         - name: data
           persistentVolumeClaim:
