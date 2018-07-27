@@ -1,0 +1,54 @@
+# yamllint disable rule:line-length
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper
+  labels:
+    app: zookeeper
+spec:
+  replicas: 3
+  serviceName: zookeeper
+  selector:
+    matchLabels:
+      app: zookeeper
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+    spec:
+      containers:
+        - name: zookeeper
+          image: zookeeper:3.4.12
+          command:
+            - /bin/sh
+            - -c
+            - export ZOO_MY_ID=$(expr $(hostname | grep -o "[[:digit:]]*$") + 1) && /docker-entrypoint.sh zkServer.sh start-foreground
+          ports:
+            - containerPort: 2181
+              name: client
+            - containerPort: 2888
+              name: server
+            - containerPort: 3888
+              name: leader-election
+          env:
+            - name: ZOO_SERVERS
+              value: "server.1=zookeeper-0.zookeeper:2888:3888 \
+                      server.2=zookeeper-1.zookeeper:2888:3888 \
+                      server.3=zookeeper-2.zookeeper:2888:3888"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+              subPath: data
+            - name: data
+              mountPath: /datalog
+              subPath: datalog
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
