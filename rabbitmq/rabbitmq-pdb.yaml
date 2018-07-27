@@ -1,0 +1,10 @@
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: rabbimq
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      name: rabbitmq

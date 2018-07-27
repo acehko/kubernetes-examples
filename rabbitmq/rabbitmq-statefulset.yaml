@@ -1,0 +1,71 @@
+# yamllint disable rule:line-length
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rabbitmq
+  labels:
+    name: rabbitmq
+spec:
+  serviceName: rabbitmq
+  replicas: 1
+  selector:
+    matchLabels:
+      name: rabbitmq
+  template:
+    metadata:
+      labels:
+        name: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3.7.2-management
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/bash
+                  - -c
+                  - >
+                    if [ -z "$(grep rabbitmq\.rabbitmq /etc/resolv.conf)" ]; then
+                      sed "s/^search \([^ ]\+\)/search rabbitmq.\1 \1/" /etc/resolv.conf > /etc/resolv.conf.new;
+                      cat /etc/resolv.conf.new > /etc/resolv.conf;
+                      rm /etc/resolv.conf.new;
+                    fi;
+                    until rabbitmqctl node_health_check; do sleep 1; done;
+                    if [[ "$HOSTNAME" != "rabbitmq-0" && -z "$(rabbitmqctl cluster_status | grep rabbitmq-0)" ]]; then
+                      rabbitmqctl stop_app;
+                      rabbitmqctl join_cluster rabbit@rabbitmq-0;
+                      rabbitmqctl start_app;
+                    fi;
+                    rabbitmqctl set_policy ha-all "." '{"ha-mode":"exactly","ha-params":3,"ha-sync-mode":"automatic"}';
+          ports:
+            - containerPort: 5672
+              name: amqp
+            - containerPort: 15672
+              name: management
+            - containerPort: 4369
+              name: epmd
+            - containerPort: 25672
+              name: rabbitmq-dist
+          env:
+            - name: RABBITMQ_VM_MEMORY_HIGH_WATERMARK
+              value: "90%"
+            - name: RABBITMQ_ERLANG_COOKIE
+              value: "my-cookie"
+            - name: RABBITMQ_DEFAULT_USER
+              value: "admin"
+            - name: RABBITMQ_DEFAULT_PASS
+              value: "admin"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/rabbitmq
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi

@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: management
+  labels:
+    name: management
+spec:
+  type: LoadBalancer
+  selector:
+    name: rabbitmq
+  ports:
+    - port: 80
+      targetPort: 15672
