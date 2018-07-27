@@ -5,10 +5,10 @@ metadata:
   name: jaeger-query
   labels:
     app: jaeger
-    tier: query
+    component: query
 spec:
   selector:
     app: jaeger
-    tier: query
+    component: query
   ports:
     - port: 16686

@@ -5,31 +5,21 @@ metadata:
   name: jaeger-query
   labels:
     app: jaeger
-    tier: query
+    component: query
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: jaeger
-      tier: query
+      component: query
   template:
     metadata:
       labels:
         app: jaeger
-        tier: query
+        component: query
     spec:
       affinity:
         podAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                topologyKey: kubernetes.io/hostname
-                labelSelector:
-                  matchExpressions:
-                    - key: app
-                      operator: In
-                      values:
-                        - cassandra
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 100

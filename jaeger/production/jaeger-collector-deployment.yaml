@@ -5,46 +5,29 @@ metadata:
   name: jaeger-collector
   labels:
     app: jaeger
-    tier: collector
+    component: collector
 spec:
   replicas: 3
   selector:
     matchLabels:
       app: jaeger
-      tier: collector
+      component: collector
   template:
     metadata:
       labels:
         app: jaeger
-        tier: collector
+        component: collector
     spec:
       affinity:
-        podAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                topologyKey: kubernetes.io/hostname
-                labelSelector:
-                  matchExpressions:
-                    - key: app
-                      operator: In
-                      values:
-                        - cassandra
         podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                topologyKey: kubernetes.io/hostname
-                labelSelector:
-                  matchExpressions:
-                    - key: app
-                      operator: In
-                      values:
-                        - jaeger
-                    - key: tier
-                      operator: In
-                      values:
-                        - collector
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - jaeger
+              topologyKey: "kubernetes.io/hostname"
       containers:
         - name: collector
           image: jaegertracing/jaeger-collector:1.2.0

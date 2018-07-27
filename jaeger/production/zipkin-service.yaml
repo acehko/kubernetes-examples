@@ -5,10 +5,10 @@ metadata:
   name: zipkin
   labels:
     app: jaeger
-    tier: zipkin
+    component: zipkin-endpoint
 spec:
   selector:
     app: jaeger
-    tier: collector
+    component: collector
   ports:
     - port: 9411

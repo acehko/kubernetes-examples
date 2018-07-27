@@ -4,8 +4,7 @@ kind: Job
 metadata:
   name: cassandra-schema
   labels:
-    app: cassandra
-    tier: schema
+    app: cassandra-schema
 spec:
   activeDeadlineSeconds: 120
   template:

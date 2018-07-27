@@ -5,7 +5,7 @@ metadata:
   name: jaeger-agent
   labels:
     app: jaeger
-    tier: agent
+    component: agent
 spec:
   type: LoadBalancer
   selector:

@@ -4,7 +4,7 @@ kind: Service
 metadata:
   labels:
     app: jaeger
-    tier: collector
+    component: collector
 spec:
   selector:
     app: jaeger

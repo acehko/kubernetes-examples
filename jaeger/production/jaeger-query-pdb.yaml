@@ -8,4 +8,4 @@ spec:
   selector:
     matchLabels:
       app: jaeger
-      tier: query
+      component: query

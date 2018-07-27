@@ -5,7 +5,7 @@ metadata:
   name: jaeger-query
   labels:
     app: jaeger
-    tier: query
+    component: query
 spec:
   type: LoadBalancer
   selector:

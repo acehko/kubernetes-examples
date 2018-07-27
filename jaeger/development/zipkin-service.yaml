@@ -5,7 +5,7 @@ metadata:
   name: zipkin
   labels:
     app: jaeger
-    tier: zipkin-collector
+    component: zipkin-endpoint
 spec:
   selector:
     app: jaeger
