@@ -1,0 +1,26 @@
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: curator-move-index
+spec:
+  schedule: "01 11 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: curator
+              image: bobrik/curator:5.4.0
+              args:
+                - --config
+                - /etc/config/config.yaml
+                - /etc/config/actions.yaml
+              volumeMounts:
+                - name: config
+                  mountPath: /etc/config
+          volumes:
+            - name: config
+              configMap:
+                name: curator-move-index

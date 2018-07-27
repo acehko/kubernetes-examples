@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch-data-warm
+  labels:
+    app: elasticsearch
+    role: data
+    type: warm
+spec:
+  clusterIP: None
+  selector:
+    app: elasticsearch
+    role: data
+    type: warm
+  ports:
+    - port: 9300
+      name: transport

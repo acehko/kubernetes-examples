@@ -1,0 +1,12 @@
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: elasticsearch-data-hot
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+      role: data
+      type: hot

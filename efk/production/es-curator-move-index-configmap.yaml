@@ -1,0 +1,67 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: curator-move-index
+data:
+  actions.yaml: |-
+    ---
+    actions:
+      1:
+        action: allocation
+        description: "Move old indexes to the warm box"
+        options:
+          key: box_type
+          value: warm
+          allocation_type: require
+          wait_for_completion: true
+          timeout_override:
+          continue_if_exception: false
+        filters:
+          - filtertype: pattern
+            kind: prefix
+            value: logstash-
+          - filtertype: age
+            source: name
+            direction: older
+            timestring: '%Y.%m.%d'
+            unit: days
+            unit_count: 3
+      2:
+        action: forcemerge
+        description: "Force merge the moved indexes"
+        options:
+          max_num_segments: 1
+          delay:
+          timeout_override: 21600
+          continue_if_exception: false
+        filters:
+          - filtertype: pattern
+            kind: prefix
+            value: logstash-
+          - filtertype: age
+            source: name
+            direction: older
+            timestring: '%Y.%m.%d'
+            unit: days
+            unit_count: 3
+  config.yaml: |-
+    ---
+    client:
+      hosts:
+        - elasticsearch-client
+      port: 9200
+      url_prefix:
+      use_ssl: false
+      certificate:
+      client_cert:
+      client_key:
+      ssl_no_validate: false
+      http_auth:
+      timeout: 30
+      master_only: false
+    logging:
+      loglevel: INFO
+      logfile:
+      logformat: default
+      blacklist: ['elasticsearch', 'urllib3']
