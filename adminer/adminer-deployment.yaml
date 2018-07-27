@@ -19,3 +19,6 @@ spec:
           image: adminer:4.6.1
           ports:
             - containerPort: 8080
+          env:
+            - name: ADMINER_DESIGN
+              value: "pappu687"
